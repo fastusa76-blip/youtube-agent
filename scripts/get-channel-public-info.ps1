@@ -18,6 +18,21 @@ if (-not $response.items -or $response.items.Count -eq 0) {
 }
 
 $channel = $response.items[0]
+$playlistId = $channel.contentDetails.relatedPlaylists.uploads
+$playlistUri = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=$([uri]::EscapeDataString($playlistId))&maxResults=10&key=$([uri]::EscapeDataString($ApiKey))"
+$playlistResponse = Invoke-RestMethod -Method Get -Uri $playlistUri
+
+$recentVideos = @(
+    foreach ($item in $playlistResponse.items) {
+        [ordered]@{
+            title = $item.snippet.title
+            publishedAt = $item.snippet.publishedAt
+            videoId = $item.contentDetails.videoId
+            url = "https://www.youtube.com/watch?v=$($item.contentDetails.videoId)"
+        }
+    }
+)
+
 $result = [ordered]@{
     channelTitle = $channel.snippet.title
     channelId = $channel.id
@@ -27,8 +42,9 @@ $result = [ordered]@{
     subscriberCount = $channel.statistics.subscriberCount
     videoCount = $channel.statistics.videoCount
     viewCount = $channel.statistics.viewCount
-    uploadsPlaylistId = $channel.contentDetails.relatedPlaylists.uploads
-    note = "Public API statistics only; this does not connect or authorize your Google account."
+    uploadsPlaylistId = $playlistId
+    recentVideos = $recentVideos
+    note = "Public channel statistics and recent public video titles only. This does not authorize your Google account or infer a reliable niche automatically."
 }
 
-$result | ConvertTo-Json -Depth 5
+$result | ConvertTo-Json -Depth 6
