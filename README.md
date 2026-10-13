@@ -49,3 +49,42 @@ The five Test-Path commands should return True.
 
 ## Publishing safety
 This project does not sign in to Google, upload, or publish anything. Any future upload feature must use Google OAuth and keep the final publishing action under your explicit approval.
+
+
+## 4. Generate a full Urdu script locally (free, no cloud API key)
+
+This uses Ollama on your own PC. It needs enough RAM and disk space to download/run the model.
+
+1. Install Ollama from https://ollama.com/download/windows
+2. Open PowerShell and run:
+
+~~~powershell
+ollama pull qwen2.5:7b
+~~~
+
+3. From the repository root, generate the script package:
+
+~~~powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\generate-script.ps1 -Title "AI Se Cartoon Video Kaise Banayein"
+~~~
+
+The script uses the local Ollama API and writes the Urdu script, storyboard, description, hashtags, thumbnail brief, and final review checklist. It does not browse the web, so fact-check the content before use. If your PC has limited RAM, use a smaller Ollama model and pass its name with `-Model`.
+
+## 5. Build a slideshow MP4 (requires FFmpeg and visuals)
+
+Install FFmpeg and confirm `ffmpeg -version` works. Put properly licensed PNG/JPG/WEBP images into the generated project's `visuals` folder. Optional narration audio can be named `narration.mp3`, `narration.wav`, or `narration.m4a` in the project folder.
+
+~~~powershell
+$Project = ".\video-projects\ai-se-cartoon-video-kaise-banayein"
+New-Item -ItemType Directory -Force "$Project\visuals" | Out-Null
+# Copy your licensed visual images into the visuals folder before building.
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-video.ps1 -Project "ai-se-cartoon-video-kaise-banayein"
+~~~
+
+This produces `final-video.mp4` from still images and optional narration. It is a slideshow builder, not a generative motion-video model. If the narration is longer than the slideshow, add more images or increase `-SecondsPerImage`.
+
+## 6. Free video tool notes
+
+See [docs/free-video-tools.md](docs/free-video-tools.md) for current official links and free-tier limitations. Free credits, regional access, watermark rules, and AI voices can change.
+
+Manual approval remains required. Do not upload until you have watched the whole exported video and completed `final-review.md`.
