@@ -1,0 +1,24 @@
+# Secrets
+.env
+.env.*
+!.env.example
+client_secret*.json
+token*.json
+oauth*.json
+*.pem
+*.key
+
+# Local generated projects and media
+video-projects/*
+!video-projects/.gitkeep
+output/
+renders/
+*.mp4
+*.mov
+*.wav
+*.mp3
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
